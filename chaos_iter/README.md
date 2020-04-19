@@ -20,3 +20,4 @@ eog chaos.png
 ```
 
 ![Chaos and iterations](chaos.png?raw=true "Chaos and iterations")
+![Chaos and iterations](chaos2.png?raw=true "Chaos and iterations")

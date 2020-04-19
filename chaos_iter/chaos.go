@@ -17,15 +17,26 @@ import (
 )
 
 type t struct {
-	n int
-	c float64
+	n          int
+	c          float64
+	minx, maxx float64
+	minc, maxc float64
+	f          f
+	fileName   string
+	fun        string
 }
 
-func f(c, x float64) float64 {
+type f func(c, x float64) float64
+
+func f1(c, x float64) float64 {
 	return 1 - c*x*x
 }
 
-func nth_f(n int, c, x float64) float64 {
+func f2(c, x float64) float64 {
+	return c * x * (1 - x)
+}
+
+func nth_f(n int, c, x float64, f f) float64 {
 	res := x
 	for i := 0; i < n; i++ {
 		res = f(c, res)
@@ -33,34 +44,40 @@ func nth_f(n int, c, x float64) float64 {
 	return res
 }
 
-func (t t) Len() int {
+func (t *t) Len() int {
 	return 300
 }
 
-func (t t) XY(i int) (float64, float64) {
-	x0 := -1 + (2/float64(t.Len()))*float64(i)
-	return float64(t.c), nth_f(t.n, t.c, x0)
+func (t *t) XY(i int) (float64, float64) {
+	x0 := t.minx + ((t.maxx-t.minx)/float64(t.Len()+2))*float64(i+1)
+	return float64(t.c), nth_f(t.n, t.c, x0, t.f)
 }
 
-func main() {
+func chaosGraph(t *t) {
 	p, err := plot.New()
 	if err != nil {
 		panic(err)
 	}
 
-	p.Title.Text = "Iteration and chaos"
+	p.Title.Text = t.fun
 	p.X.Label.Text = "C"
 	p.Y.Label.Text = "Results"
 
-	for i := float64(0); i < 2; i += 0.01 {
-		err = plotutil.AddScatters(p, t{1000, i})
+	for i := t.minc; i < t.maxc; i += 0.01 {
+		t.c = i
+		err = plotutil.AddScatters(p, t)
 
 		if err != nil {
 			panic(err)
 		}
 	}
 
-	if err := p.Save(10*vg.Inch, 10*vg.Inch, "chaos.png"); err != nil {
+	if err := p.Save(10*vg.Inch, 10*vg.Inch, t.fileName); err != nil {
 		panic(err)
 	}
+}
+
+func main() {
+	chaosGraph(&t{1000, 0, -1, 1, 0, 2, f1, "chaos.png", "1 - c * x^2"})
+	chaosGraph(&t{1000, 0, 0, 1, 2.4, 4, f2, "chaos2.png", "c * x * (1 - x)"})
 }
