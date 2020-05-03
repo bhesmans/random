@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<script src="gauge.js"></script>
+		<script>
+			window.addEventListener("load", function(evt) {
+				var output = document.getElementById("output");
+				var ws = new WebSocket("ws://localhost:8080/ws");
+				var gauges = {}
+
+				var addGauge = function(gid) {
+					d = document.createElement("div");
+					d.setAttribute("id", gid);
+					d.setAttribute("class", "gauge-container");
+					d.style.width="200px";
+					d.style.height="200px";
+					output.appendChild(d);
+					var gauge = Gauge(d, {
+						color: function(value) {
+							if(value < 25) {
+								return "#5ee432";
+							} else if(value < 50) {
+								return "#fffa50";
+							} else if(value < 75) {
+								return "#f7aa38";
+							} else {
+								return "#ef4655";
+							}
+						}
+					});
+					gauges[gid] = gauge
+				}
+
+				var updateGauge = function(gid, val) {
+					var d = document.getElementById(gid);
+					if (!d) {
+						addGauge(gid)
+					}
+					gauges[gid].setValueAnimated(val)
+				};
+
+				ws.onopen = function(evt) {
+					<!-- console.log("Open") -->
+				}
+
+				ws.onclose = function(evt) {
+					<!-- console.log("Close") -->
+					ws = null;
+				}
+
+				ws.onmessage = function(evt) {
+					<!-- console.log("Msg") -->
+					var fields = evt.data.split("|")
+					updateGauge(fields[0], fields[1]);
+				}
+
+				ws.onerror = function(evt) {
+					<!-- console.log("Error") -->
+				}
+
+				return false;
+			});
+		</script>
+	</head>
+	<body>
+		<div id="output" style="display: flex; flex-wrap: wrap"></div>
+	</body>
+</html>
