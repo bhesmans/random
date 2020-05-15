@@ -1,4 +1,4 @@
-.PHONY: generatedSockopt.go
+.PHONY: test clean
 
 GWT = ${GOPATH}/src/golang.org/x/sys
 GD = $(GWT)/.git
@@ -21,3 +21,8 @@ generatedSockopt.go:
 	sed -i 's/SYS_GETSOCKOPT/syscall.SYS_GETSOCKOPT/' $@
 	go build ./$@
 
+test: generatedSockopt.go
+	sudo GOPATH=$${GOPATH} $$(which go) test . -v
+
+clean:
+	rm -rf generatedSockopt.go
