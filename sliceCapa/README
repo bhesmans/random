@@ -1,0 +1,8 @@
+In go, it seems that one can not directly address indexes beyond the slice's
+length even if its capacity would permit it. The idea would be to put some
+element beyond the slice's length limit and somehow keep them behind the scene
+if we don't need them.
+
+This code is a simple example to put a element after the permitted index, but
+still keep the same length. There are probably other ways to achieve the same
+thing, but that's an example
