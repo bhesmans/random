@@ -1,6 +1,6 @@
 Small tests with matrix inspired by
 
-__Mathematics from the birth of numbers__ By __Jan Gullberg__ pp 646-647
+_Mathematics from the birth of numbers_ By _Jan Gullberg_ pp 646-647
 
 This implements the first method described in the book to calculate the
 determinant of a square matrix.
